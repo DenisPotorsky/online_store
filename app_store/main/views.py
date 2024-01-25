@@ -1,16 +1,17 @@
+from datetime import datetime, timedelta, date
+from itertools import chain
+
 from django.shortcuts import render
 from django.http import HttpResponse
+from .models import Client, Order
 
-from .models import Client
+
+def index_page(request):
+    return render(request, 'main/index.html')
 
 
-#
-# def index_page(request):
-#     return render(request, 'index.html')
-#
-#
-# def about_page(request):
-#     return render(request, 'about.html')
+def about_page(request):
+    return render(request, 'main/about.html')
 
 
 def show_clients(request):
@@ -19,16 +20,16 @@ def show_clients(request):
     return HttpResponse(result)
 
 
-def index_page(request):
-    text_i = ('<h1>Главная<h1> <br> <p>Скорее всего это будет сайт магазина-мастерской '
-              'с онлайн записью и многим другим</p>')
-    return HttpResponse(text_i)
+
+def show_sorted_orders(request):
+    d = datetime.today() - timedelta(days=2)
+    context = {}
+    context['orders'] = Order.objects.filter(date_ordered__gte=date(d.year, d.month, d.day))
+    return render(request, 'main/sorted_orders.html', context)
 
 
-def about_page(request):
-    text_a = ('<h1>О нас<h1> <br> <p>Меня зовут Щанников Денис Анатольевич, 47 лет. Я концертный форепианный техник, '
-              'ну или по-простому настройщик пианино и роялей.</p>')
-    return HttpResponse(text_a)
-
-
-
+def get_client_orders(request, pk):
+    orders = Order.objects.filter(client_id=pk)
+    li = [order.get_goods() for order in orders]
+    sorted_list = list(chain.from_iterable(li))
+    return render(request, 'main/orders_and_goods.html', {'orders': orders, 'goods': sorted_list})

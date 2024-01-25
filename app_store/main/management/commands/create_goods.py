@@ -2,7 +2,7 @@ from django.core.management.base import BaseCommand
 
 # from app_store.main.models import Client
 from main.models import Goods
-
+from decimal import Decimal
 
 class Command(BaseCommand):
     help = "Create goods."
@@ -14,10 +14,11 @@ class Command(BaseCommand):
         parser.add_argument('quantity')
 
     def handle(self, *args, **kwargs):
-        name = kwargs['name'],
-        description = kwargs['description'],
-        price = kwargs['price'],
+        name = kwargs['name']
+        description = kwargs['description']
+        price = Decimal(kwargs['price'])
         quantity = kwargs['quantity']
         goods = Goods(name=name, description=description, price=price, quantity=quantity)
         goods.save()
         self.stdout.write(f'{goods}')
+
