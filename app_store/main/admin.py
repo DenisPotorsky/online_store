@@ -21,12 +21,18 @@ class OrderAdmin(admin.ModelAdmin):
 def reset_quantity(modeladmin, request, queryset):
     queryset.update(quantity=0)
 
+
+@admin.action(description="Удалить товар")
+def delete_good(modeladmin, request, queryset):
+    queryset.delete()
+
+
 @admin.register(Good)
 class GoodAdmin(admin.ModelAdmin):
     list_display = ['name', 'description', 'price', 'quantity', 'image']
     list_editable = ['description', 'price', 'quantity', 'image']
     search_fields = ['name', 'description', 'price', 'quantity']
-    actions = [reset_quantity]
+    actions = [reset_quantity, delete_good]
     fieldsets = [
         (
             None,
@@ -46,12 +52,6 @@ class GoodAdmin(admin.ModelAdmin):
             'Бухгалтерия',
             {
                 'fields': ['price', 'quantity'],
-            })
-        , ]
-
-
-
-
-
-
-
+            }
+        )
+    ]
